@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                                       http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
+    <changeSet id="0" author="Art">
+        <createTable tableName="sectors">
+            <column name="id" type="int" autoIncrement="true">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="name" type="text">
+                <constraints nullable="false"/>
+            </column>
+            <column name="parent_sector_id" type="int">
+                <constraints nullable="true" foreignKeyName="fk_sectors_sectors" references="sectors(id)"/>
+            </column>
+        </createTable>
+
+        <createTable tableName="users">
+            <column name="id" type="int" autoIncrement="true">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="name" type="text">
+                <constraints nullable="false"/>
+            </column>
+            <column name="agreed_to_terms" type="boolean">
+                <constraints nullable="false"/>
+            </column>
+            <column name="session_id" type="text">
+                <constraints nullable="false" unique="true"/>
+            </column>
+        </createTable>
+
+        <createTable tableName="user_sectors">
+            <column name="id" type="int" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="sector_id" type="int">
+                <constraints foreignKeyName="fk_user_sectors_sectors" nullable="false" references="sectors(id)"/>
+            </column>
+            <column name="user_session_id" type="text">
+                <constraints foreignKeyName="fk_user_sectors_users" nullable="false" references="users(session_id)"/>
+            </column>
+        </createTable>
+
+        <loadUpdateData tableName="sectors" primaryKey="id" file="sectors.csv" relativeToChangelogFile="true" separator=";">
+            <column name="id" index="0" type="NUMERIC"/>
+            <column name="name" index="1" type="STRING"/>
+            <column name="parent_sector_id" index="2" type="NUMERIC"/>
+        </loadUpdateData>
+    </changeSet>
+
+</databaseChangeLog>

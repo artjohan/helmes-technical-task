@@ -1,0 +1,79 @@
+id;name;parent_sector_id
+1;Manufacturing;
+2;Construction materials;1
+3;Electronics and Optics;1
+4;Food and Beverage;1
+5;Bakery & confectionery products;4
+6;Beverages;4
+7;Fish & fish products;4
+8;Meat & meat products;4
+9;Milk & dairy products;4
+10;Other;4
+11;Sweets & snack food;4
+12;Furniture;1
+13;Bathroom/Sauna;12
+14;Bedroom;12
+15;Children's room;12
+16;Kitchen;12
+17;Living room;12
+18;Office;12
+19;Other (Furniture);12
+20;Outdoor;12
+21;Project furniture;12
+22;Machinery;1
+23;Machinery components;22
+24;Machinery equipment/tools;22
+25;Manufacture of machinery;22
+26;Maritime;22
+27;Aluminium and steel workboats;26
+28;Boat/Yacht building;26
+29;Ship repair and conversion;26
+30;Metal structures;22
+31;Other;22
+32;Repair and maintenance service;22
+33;Metalworking;1
+34;Construction of metal structures;33
+35;Houses and buildings;33
+36;Metal products;33
+37;Metal works;33
+38;CNC-machining;37
+39;Forgings, Fasteners;37
+40;Gas, Plasma, Laser cutting;37
+41;MIG, TIG, Aluminium welding;37
+42;Plastic and Rubber;1
+43;Packaging;42
+44;Plastic processing technology;42
+45;Blowing;44
+46;Moulding;44
+47;Plastics welding and processing;44
+48;Plastic profiles;42
+49;Printing;1
+50;Advertising;49
+51;Book/Periodicals printing;49
+52;Labelling and packaging printing;49
+53;Textile and Clothing;1
+54;Clothing;53
+55;Textile;53
+56;Wood;1
+57;Other (Wood);56
+58;Wooden building materials;56
+59;Wooden houses;56
+60;Other;
+61;Creative industries;60
+62;Energy technology;60
+63;Environment;60
+64;Service;
+65;Business services;64
+66;Engineering;64
+67;Information Technology and Telecommunications;64
+68;Data processing, Web portals, E-marketing;67
+69;Programming, Consultancy;67
+70;Software, Hardware;67
+71;Telecommunications;67
+72;Tourism;64
+73;Translation Services;64
+74;Transport and Logistics;64
+75;Air;74
+76;Rail;74
+77;Road;74
+78;Water;74
