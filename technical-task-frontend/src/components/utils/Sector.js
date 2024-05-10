@@ -34,7 +34,7 @@ function Sector({id, name, subsectors, addSector, depth = 0, selectedSectors}) {
                             onClick={handleToggle}
                             style={{marginRight: '5px', visibility: subsectors.length > 0 ? 'visible' : 'hidden'}}
                         />
-                    )};
+                    )}
                     {name}
                 </div>
             </div>
@@ -43,7 +43,7 @@ function Sector({id, name, subsectors, addSector, depth = 0, selectedSectors}) {
                     {subsectors.map((subsector) => (
                         <Sector key={subsector.id} {...subsector} addSector={addSector} depth={depth + 1}
                                 selectedSectors={selectedSectors}/>
-                    ))};
+                    ))}
                 </div>
             )}
         </div>

@@ -10,72 +10,72 @@ import com.helmes.technicaltaskbackend.repository.UserDataRepository;
 import com.helmes.technicaltaskbackend.repository.UserSectorRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Collections;
 import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 
+@ExtendWith(MockitoExtension.class)
 class UserFormServiceTest {
 
     @Mock
-    UserSectorRepository userSectorRepository;
+    private UserSectorRepository userSectorRepository;
 
     @Mock
-    UserDataRepository userDataRepository;
+    private UserDataRepository userDataRepository;
 
     @Mock
-    UserService userService;
+    private UserService userService;
 
     @InjectMocks
-    UserFormService userFormService;
+    private UserFormService userFormService;
 
-    @BeforeEach
-    void setUp() {
-        MockitoAnnotations.initMocks(this);
+    @Test
+    void givenExistingSessionId_whenPostingUserData_thenShouldUpdateExistingUser() {
+        UserSectorEntity sector1 = new UserSectorEntity(1, "session-id");
+        UserSectorEntity sector2 = new UserSectorEntity(2, "session-id");
+
+        UserEntity existingUser = new UserEntity("Art", true, "session-id");
+        UserFormDTO form = new UserFormDTO("Part", false, "session-id", List.of(1, 2));
+        UserEntity updatedExistingUser = new UserEntity("Part", false, "session-id");
+
+        when(userDataRepository.findBySessionId("session-id")).thenReturn(existingUser);
+        when(userService.updateExistingUser(form, existingUser)).thenReturn(updatedExistingUser);
+        when(userSectorRepository.findDistinctByUserSessionId("session-id")).thenReturn(List.of(sector1, sector2));
+
+        UserFormDTO actual = userFormService.saveForm(form);
+
+        verify(userSectorRepository).save(sector1);
+        verify(userSectorRepository).save(sector2);
+
+        assertEquals(actual, form);
     }
 
     @Test
-    void givenValidUserFormObject_whenSubmittingForm_thenShouldReturnObjectWithSameValues() {
-        String sessionId = "session-id";
-        String name = "Art";
+    void givenNewSessionId_whenPostingUserData_thenShouldCreateNewUser() {
+        UserSectorEntity sector1 = new UserSectorEntity(1, "session-id");
+        UserSectorEntity sector2 = new UserSectorEntity(2, "session-id");
 
-        UserFormDTO userForm = new UserFormDTO(name, true, sessionId, List.of(4, 5, 6));
+        UserFormDTO form = new UserFormDTO("Art", false, "session-id", List.of(1, 2));
+        UserEntity newUser = new UserEntity("Art", false, "session-id");
 
-        UserEntity user = new UserEntity();
-        user.setId(1);
-        user.setName(name);
-        user.setSessionId(sessionId);
-        user.setAgreedToTerms(true);
+        when(userDataRepository.findBySessionId("session-id")).thenReturn(null);
+        when(userService.createNewUser(form)).thenReturn(newUser);
+        when(userSectorRepository.findDistinctByUserSessionId("session-id")).thenReturn(List.of(sector1, sector2));
 
-        UserSectorEntity sector1 = new UserSectorEntity();
-        UserSectorEntity sector2 = new UserSectorEntity();
-        UserSectorEntity sector3 = new UserSectorEntity();
+        UserFormDTO actual = userFormService.saveForm(form);
 
-        sector1.setId(1);
-        sector2.setId(2);
-        sector3.setId(3);
+        verify(userSectorRepository).save(sector1);
+        verify(userSectorRepository).save(sector2);
 
-        sector1.setSectorId(4);
-        sector2.setSectorId(5);
-        sector3.setSectorId(6);
-
-        sector1.setUserSessionId(sessionId);
-        sector2.setUserSessionId(sessionId);
-        sector3.setUserSessionId(sessionId);
-
-        when(userDataRepository.findBySessionId(sessionId)).thenReturn(user);
-        when(userSectorRepository.findDistinctByUserSessionId(sessionId)).thenReturn(List.of(sector1, sector2, sector3));
-
-        UserFormDTO expected = new UserFormDTO(name, true, sessionId, List.of(4, 5, 6));
-
-        UserFormDTO actual = userFormService.saveForm(userForm);
-
-        assertEquals(expected, actual);
+        assertEquals(actual, form);
     }
 }

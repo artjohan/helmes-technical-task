@@ -12,19 +12,14 @@ public class UserService {
 
     private final UserDataRepository userDataRepository;
 
-    void createNewUser(UserFormDTO form) {
-        UserEntity newUser = new UserEntity();
-        newUser.setName(form.getName());
-        newUser.setAgreedToTerms(form.isAgreedToTerms());
-        newUser.setSessionId(form.getSessionId());
-
-        userDataRepository.save(newUser);
+    UserEntity createNewUser(UserFormDTO form) {
+       return userDataRepository.save(new UserEntity(form.getName(), form.isAgreedToTerms(), form.getSessionId()));
     }
 
-    void updateExistingUser(UserFormDTO form, UserEntity existingUser) {
+    UserEntity updateExistingUser(UserFormDTO form, UserEntity existingUser) {
         existingUser.setName(form.getName());
         existingUser.setAgreedToTerms(form.isAgreedToTerms());
 
-        userDataRepository.save(existingUser);
+        return userDataRepository.save(existingUser);
     }
 }

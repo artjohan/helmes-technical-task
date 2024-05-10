@@ -1,12 +1,12 @@
 package com.helmes.technicaltaskbackend.entity;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 @Entity
 @Getter
-@Setter
+@NoArgsConstructor
+@EqualsAndHashCode
 @Table(name = "user_sectors")
 public class UserSectorEntity {
 
@@ -15,4 +15,9 @@ public class UserSectorEntity {
     private int id;
     private int sectorId;
     private String userSessionId;
+
+    public UserSectorEntity(int sectorId, String userSessionId) {
+        this.sectorId = sectorId;
+        this.userSessionId = userSessionId;
+    }
 }

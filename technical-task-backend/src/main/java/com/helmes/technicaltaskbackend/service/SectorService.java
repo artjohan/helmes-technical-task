@@ -21,7 +21,7 @@ public class SectorService {
 
         return allSectors.stream()
                 .filter(sector -> sector.getParentSectorId() == null)
-                .map(mainSector -> attachSubsectors(mainSector, allSectors))
+                .map(parentSector -> attachSubsectors(parentSector, allSectors))
                 .toList();
     }
 

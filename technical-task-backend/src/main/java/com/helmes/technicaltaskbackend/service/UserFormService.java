@@ -23,43 +23,33 @@ public class UserFormService {
 
     @Transactional
     public UserFormDTO saveForm(UserFormDTO form) {
-        saveUserData(form);
-        saveUserSectors(form);
+        UserEntity savedUser = saveUserData(form);
+        List<UserSectorEntity> savedUserSectors = saveUserSectors(form);
 
-        return getUserFormBySessionId(form.getSessionId());
+        return new UserFormDTO(
+                savedUser.getName(),
+                savedUser.getAgreedToTerms(), savedUser.getSessionId(),
+                savedUserSectors.stream().map(UserSectorEntity::getSectorId).toList());
     }
 
-    private void saveUserData(UserFormDTO form) {
+    private UserEntity saveUserData(UserFormDTO form) {
         UserEntity existingUser = userDataRepository.findBySessionId(form.getSessionId());
 
         if (existingUser != null) {
-            userService.updateExistingUser(form, existingUser);
+            return userService.updateExistingUser(form, existingUser);
         } else {
-            userService.createNewUser(form);
+            return userService.createNewUser(form);
         }
     }
 
-    private void saveUserSectors(UserFormDTO form) {
+    private List<UserSectorEntity> saveUserSectors(UserFormDTO form) {
         String sessionId = form.getSessionId();
 
         userSectorRepository.deleteByUserSessionId(sessionId);
 
-        form.getUserSectorIds().forEach(sectorId -> {
-            UserSectorEntity userSector = new UserSectorEntity();
+        form.getUserSectorIds().forEach(sectorId -> userSectorRepository.save(new UserSectorEntity(sectorId, sessionId)));
 
-            userSector.setSectorId(sectorId);
-            userSector.setUserSessionId(sessionId);
-
-            userSectorRepository.save(userSector);
-        });
-    }
-
-    private UserFormDTO getUserFormBySessionId(String sessionId) {
-        UserEntity userData = userDataRepository.findBySessionId(sessionId);
-
-        List<Integer> userSectorIds = userSectorRepository.findDistinctByUserSessionId(sessionId).stream().map(UserSectorEntity::getSectorId).toList();
-
-        return new UserFormDTO(userData.getName(), userData.getAgreedToTerms(), userData.getSessionId(), userSectorIds);
+        return userSectorRepository.findDistinctByUserSessionId(form.getSessionId());
     }
 
 }
