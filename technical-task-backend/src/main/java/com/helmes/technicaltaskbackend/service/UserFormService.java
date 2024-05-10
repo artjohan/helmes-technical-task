@@ -6,43 +6,36 @@ import com.helmes.technicaltaskbackend.entity.UserSectorEntity;
 import com.helmes.technicaltaskbackend.repository.UserDataRepository;
 import com.helmes.technicaltaskbackend.repository.UserSectorRepository;
 import jakarta.transaction.Transactional;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class UserFormService {
 
-    @Autowired
-    private UserDataRepository userDataRepository;
+    private final UserDataRepository userDataRepository;
 
-    @Autowired
-    private UserSectorRepository userSectorRepository;
+    private final UserSectorRepository userSectorRepository;
+
+    private final UserService userService;
 
     @Transactional
     public UserFormDTO saveForm(UserFormDTO form) {
         saveUserData(form);
         saveUserSectors(form);
 
-        return getUserDataAndSectors(form.getSessionId());
+        return getUserFormBySessionId(form.getSessionId());
     }
 
     private void saveUserData(UserFormDTO form) {
         UserEntity existingUser = userDataRepository.findBySessionId(form.getSessionId());
 
         if (existingUser != null) {
-            existingUser.setName(form.getName());
-            existingUser.setAgreedToTerms(form.isAgreedToTerms());
-
-            userDataRepository.save(existingUser);
+            userService.updateExistingUser(form, existingUser);
         } else {
-            UserEntity newUser = new UserEntity();
-            newUser.setName(form.getName());
-            newUser.setAgreedToTerms(form.isAgreedToTerms());
-            newUser.setSessionId(form.getSessionId());
-
-            userDataRepository.save(newUser);
+            userService.createNewUser(form);
         }
     }
 
@@ -61,11 +54,12 @@ public class UserFormService {
         });
     }
 
-    private UserFormDTO getUserDataAndSectors(String sessionId) {
+    private UserFormDTO getUserFormBySessionId(String sessionId) {
         UserEntity userData = userDataRepository.findBySessionId(sessionId);
 
-        List<Integer> userSectorIds = userSectorRepository.findDistinctSectorIdByUserSessionId(sessionId);
+        List<Integer> userSectorIds = userSectorRepository.findDistinctByUserSessionId(sessionId).stream().map(UserSectorEntity::getSectorId).toList();
 
         return new UserFormDTO(userData.getName(), userData.getAgreedToTerms(), userData.getSessionId(), userSectorIds);
     }
+
 }
